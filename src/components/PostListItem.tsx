@@ -1,101 +1,129 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { formatDistanceToNowStrict } from "date-fns";
-import posts from "../../assets/data/posts.json";
+
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Post } from "../types";
+import { Link } from "expo-router";
 
 type PostListItemProps = {
   post: Post;
+  isDetailedPost?: boolean;
 };
 
-export default function PostListItem({ post }: PostListItemProps) {
-  return (
-    <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
-      {/* post header  */}
-      <View style={{ flexDirection: "row", gap: 10 }}>
-        <Image source={{ uri: post.group.image }} style={styles.imageStyle} />
-        <Text style={{ fontWeight: "bold" }}>{post.group.name}</Text>
-        <Text style={{ color: "grey" }}>
-          {formatDistanceToNowStrict(new Date(post.created_at))}
-        </Text>
-        <View style={{ marginLeft: "auto" }}>
-          <Text style={styles.joinButton}>join</Text>
-        </View>
-      </View>
-      {/* content  */}
+export default function PostListItem({
+  post,
+  isDetailedPost,
+}: PostListItemProps) {
+  const shouldShowImage = isDetailedPost || post.image;
+  const shouldShowDescription = !!post.description;
 
-      <Text style={styles.title}>{post.title}</Text>
-      {post.image && (
-        <Image
-          source={{ uri: post.image }}
-          style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 15 }}
-        />
-      )}
-      {!post.image && post.description && (
-        <Text numberOfLines={4}>{post.description}</Text>
-      )}
-      {/* post footer  */}
-      <View style={{ flexDirection: "row" }}>
+  return (
+    <Link href={`/post/${post.id}`}>
+      <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
+        {/* post header  */}
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <View style={[{ flexDirection: "row" }, styles.iconBox]}>
-            <MaterialCommunityIcons
-              name="arrow-up-bold-outline"
-              size={19}
-              color="black"
-            />
-            <Text
-              style={{ fontWeight: "500", marginLeft: 5, alignSelf: "center" }}
-            >
-              {post.upvotes}
-            </Text>
-            <View
-              style={{
-                width: 1,
-                backgroundColor: "#D4D4D4",
-                height: 14,
-                marginHorizontal: 7,
-                alignSelf: "center",
-              }}
-            />
-            <MaterialCommunityIcons
-              name="arrow-down-bold-outline"
-              size={19}
-              color="black"
-            />
-          </View>
-          <View style={[{ flexDirection: "row" }, styles.iconBox]}>
-            <MaterialCommunityIcons
-              name="comment-outline"
-              size={19}
-              color="black"
-            />
-            <Text
-              style={{ fontWeight: "500", marginLeft: 5, alignSelf: "center" }}
-            >
-              {post.nr_of_comments}
-            </Text>
+          <Image source={{ uri: post.group.image }} style={styles.imageStyle} />
+          <Text style={{ fontWeight: "bold" }}>{post.group.name}</Text>
+          <Text style={{ color: "grey" }}>
+            {formatDistanceToNowStrict(new Date(post.created_at))}
+          </Text>
+          <View style={{ marginLeft: "auto" }}>
+            {isDetailedPost && (
+              <Text style={{ fontSize: 14, color: "#fd5f04ff" }}>
+                by {post.user.name}
+              </Text>
+            )}
+            <Text style={styles.joinButton}>join</Text>
           </View>
         </View>
-        <View style={{ marginLeft: "auto", flexDirection: "row", gap: 10 }}>
-          <MaterialCommunityIcons
-            name="trophy-outline"
-            size={19}
-            color="black"
-            style={styles.iconBox}
+
+        {/* content  */}
+        <Text style={styles.title}>{post.title}</Text>
+
+        {shouldShowImage && post.image && (
+          <Image
+            source={{ uri: post.image }}
+            style={{ width: "100%", aspectRatio: 4 / 3, borderRadius: 15 }}
           />
-          <MaterialCommunityIcons
-            name="share-outline"
-            size={19}
-            color="black"
-            style={styles.iconBox}
-          />
+        )}
+
+        {shouldShowDescription && (
+          <Text numberOfLines={isDetailedPost ? undefined : 4}>
+            {post.description}
+          </Text>
+        )}
+
+        {/* post footer  */}
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <View style={[{ flexDirection: "row" }, styles.iconBox]}>
+              <MaterialCommunityIcons
+                name="arrow-up-bold-outline"
+                size={19}
+                color="black"
+              />
+              <Text
+                style={{
+                  fontWeight: "500",
+                  marginLeft: 5,
+                  alignSelf: "center",
+                }}
+              >
+                {post.upvotes}
+              </Text>
+              <View
+                style={{
+                  width: 1,
+                  backgroundColor: "#D4D4D4",
+                  height: 14,
+                  marginHorizontal: 7,
+                  alignSelf: "center",
+                }}
+              />
+              <MaterialCommunityIcons
+                name="arrow-down-bold-outline"
+                size={19}
+                color="black"
+              />
+            </View>
+
+            <View style={[{ flexDirection: "row" }, styles.iconBox]}>
+              <MaterialCommunityIcons
+                name="comment-outline"
+                size={19}
+                color="black"
+              />
+              <Text
+                style={{
+                  fontWeight: "500",
+                  marginLeft: 5,
+                  alignSelf: "center",
+                }}
+              >
+                {post.nr_of_comments}
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ marginLeft: "auto", flexDirection: "row", gap: 10 }}>
+            <MaterialCommunityIcons
+              name="trophy-outline"
+              size={19}
+              color="black"
+              style={styles.iconBox}
+            />
+            <MaterialCommunityIcons
+              name="share-outline"
+              size={19}
+              color="black"
+              style={styles.iconBox}
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </Link>
   );
 }
-
-//!stylesheet
 
 const styles = StyleSheet.create({
   joinButton: {

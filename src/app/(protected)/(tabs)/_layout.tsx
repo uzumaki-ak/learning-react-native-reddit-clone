@@ -3,9 +3,25 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
+import { useAuth } from "@clerk/clerk-expo";
+
 export default function TabLayout() {
+  const { signOut } = useAuth();
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: "blue",
+        headerRight: () => (
+          <MaterialCommunityIcons
+            name="power-standby"
+            size={24}
+            color="black"
+            style={{ paddingRight: 10 }}
+            onPress={() => signOut()}
+          />
+        ),
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
