@@ -9,16 +9,20 @@ import {
   Platform,
   ScrollView,
   Dimensions,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
+import { useAtom } from "jotai";
+import { selectedGroupAtom } from "../../../atoms";
 
-const { height: screenHeight } = Dimensions.get('window');
+const { height: screenHeight } = Dimensions.get("window");
 
 export default function CreateScreen() {
   const [title, setTitle] = useState<string>("");
   const [bodyText, setBodyText] = useState<string>("");
+  const [group, setGroup] = useAtom(selectedGroupAtom);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,19 +49,33 @@ export default function CreateScreen() {
       >
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ 
+          contentContainerStyle={{
             paddingVertical: 10,
-            flexGrow: 1 // Better than fixed minHeight
+            flexGrow: 1, // Better than fixed minHeight
           }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           nestedScrollEnabled={true}
         >
           {/* Community Selector */}
-          <View style={styles.communityContainer}>
-            <Text style={styles.rStyles}>r/</Text>
-            <Text style={{ fontWeight: "600" }}>select a community</Text>
-          </View>
+          <Link href={"groupSelector"} asChild>
+            <Pressable style={styles.communityContainer}>
+              {group ? (
+                <>
+                  <Image
+                    source={{ uri: group.image }}
+                    style={{ width: 20, height: 20, borderRadius: 10 }}
+                  />
+                  <Text>{group.name}</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.rStyles}>r/</Text>
+                  <Text style={{ fontWeight: "600" }}>select a community</Text>
+                </>
+              )}
+            </Pressable>
+          </Link>
 
           {/* Title Input */}
           <TextInput
